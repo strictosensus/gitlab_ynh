@@ -24,18 +24,17 @@ admin=$YNH_APP_ARG_ADMIN
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
-# Save app settings
-ynh_app_setting_set "$app" is_public "$is_public"
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
+    || ynh_die "Path not available: ${domain}${path_url}"
 
 mailadmin=$(ynh_user_get_info $admin mail)
 portNginx=$(ynh_find_port 8080)
 portUnicorn=$(ynh_find_port 9080)
 rdmPass=$(ynh_string_random 30)
 
-# Check domain/path availability
-sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path_url}"
-
+# Save app settings
+ynh_app_setting_set "$app" is_public "$is_public"
 
 # Add gitlab repository
 sudo apt-get install -yy curl openssh-server ca-certificates postfix apt-transport-https
